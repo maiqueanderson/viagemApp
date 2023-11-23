@@ -4,6 +4,7 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import "react-native-gesture-handler";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+
 import HomeScreen from "./components/HomeScreen";
 import ParaGastar from "./components/ParaGastar";
 import CriarViagem from "./components/CriarViagem";
@@ -24,9 +25,21 @@ export default function App() {
           ),
         }}
          />
-        <Tab.Screen 
+         <Tab.Screen 
+        
         name="ParaGastar" 
         component={ParaGastar} 
+        options={{
+          tabBarLabel: 'Novo Gasto',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="cash-plus" color={color} size={26} />
+          ),
+        }}
+        />
+        <Tab.Screen 
+        
+        name="CriarViagem" 
+        component={CriarViagem} 
         options={{
           tabBarLabel: 'Viagens',
           tabBarIcon: ({ color }) => (
