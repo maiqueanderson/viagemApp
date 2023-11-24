@@ -49,6 +49,34 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
+
+  
+  const handleNovaViagem = async () => {
+    try {
+      const viagens = await AsyncStorage.setItem("viagens");
+      const viagensArray = viagens ? JSON.parse(viagens) : [];
+  
+      const novaViagem = {
+        cidade: cidade,
+        dias: dias,
+        orcamento: orcamento,
+      };
+  
+      viagensArray.push(novaViagem);
+      await AsyncStorage.setItem("viagens", JSON.stringify(viagensArray));
+
+  
+      setRefresh(!refresh);
+      hideModal();
+    } catch (error) {
+      console.error("Erro ao salvar viagem:", error);
+    }
+  };
+  
+  
+  
+  
+
   useEffect(() => {
     const fetchViagens = async () => {
       try {
@@ -178,29 +206,7 @@ const HomeScreen = ({navigation}) => {
                     icon="plus"
                     mode="contained"
                     onPress={async () => {
-                      try {
-                        const viagem = {
-                          cidade: cidade,
-                          dias: dias,
-                          orcamento: orcamento,
-                        };
-
-                        const viagens = await AsyncStorage.setItem("viagens");
-                        const viagensArray = viagens ? JSON.parse(viagens) : [];
-
-                        viagensArray.push(viagem);
-                        await AsyncStorage.setItem(
-                          "viagens",
-                          JSON.stringify(viagensArray)
-                        );
-                        setRefresh(!refresh);
-                        hideModal();
-                        
-                        
-                        
-                      } catch (error) {
-                        console.error("Erro ao salvar viagem:", error);
-                      }
+                      handleNovaViagem()
                     }}
                   >
                     Nova viagem

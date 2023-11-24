@@ -9,6 +9,7 @@ import HomeScreen from "./components/HomeScreen";
 import ParaGastar from "./components/ParaGastar";
 import CriarViagem from "./components/CriarViagem";
 
+
 const Tab = createMaterialBottomTabNavigator();
 
 const theme = {
