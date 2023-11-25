@@ -109,6 +109,7 @@ const CriarViagem = ({ navigation }) => {
                           cidade: cidade,
                           dias: dias,
                           orcamento: orcamento,
+                          gasto: 0
                         };
 
                         const viagens = await AsyncStorage.setItem("viagens");

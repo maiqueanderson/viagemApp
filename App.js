@@ -77,25 +77,15 @@ export default function App() {
           ),
         }}
          />
-         <Tab.Screen 
-        
-        name="ParaGastar" 
-        component={ParaGastar} 
-        options={{
-          tabBarLabel: 'Novo Gasto',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="plus-box" color={color} size={26} />
-          ),
-        }}
-        />
+       
         <Tab.Screen 
         
         name="CriarViagem" 
         component={CriarViagem} 
         options={{
-          tabBarLabel: 'Viagens',
+          tabBarLabel: 'Nova Viagem',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="wallet-travel" color={color} size={26} />
+            <MaterialCommunityIcons name="plus-box" color={color} size={26} />
           ),
         }}
         />

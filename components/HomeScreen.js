@@ -13,20 +13,29 @@ import {
 } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+
 const renderDias = (quantidadeDias, valorOrca) => {
   const dias = [];
+  const days  = [];
+  const orc = [];
+
   for (let i = 1; i <= quantidadeDias; i++) {
     const newOrc = (valorOrca / quantidadeDias).toFixed(2);
+
+    days.push(i);
+    orc.push(newOrc);
+
     dias.push(
       <View key={i}>
         <List.Item
-          title={`${i}º DIA`}
-          right={() => <Text>{`R$ ${newOrc}`}</Text>}
+          title={`${days[i - 1]}º DIA`} 
+          right={() => <Text>{`R$ ${orc[i - 1]}`}</Text>}
         />
         <Divider />
       </View>
     );
   }
+
   return dias;
 };
 
@@ -49,31 +58,35 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
-
   
-  const handleNovaViagem = async () => {
+  const adicionarGasto = async () => {
     try {
-      const viagens = await AsyncStorage.setItem("viagens");
+      // Obtenha a coleção atual de viagens do AsyncStorage
+      const viagens = await AsyncStorage.getItem('viagens');
       const viagensArray = viagens ? JSON.parse(viagens) : [];
   
-      const novaViagem = {
-        cidade: cidade,
-        dias: dias,
-        orcamento: orcamento,
-      };
+      // Supondo que você queira atualizar o gasto da viagem no índice 0
+      const indiceDaViagemParaAtualizar = 0;
   
-      viagensArray.push(novaViagem);
-      await AsyncStorage.setItem("viagens", JSON.stringify(viagensArray));
-
+      // Verifique se a viagem que você deseja atualizar existe na coleção
+      if (viagensArray.length > indiceDaViagemParaAtualizar) {
+        // Atualize o valor do gasto na viagem desejada
+        viagensArray[indiceDaViagemParaAtualizar].gasto = parseFloat(viagensArray[indiceDaViagemParaAtualizar].gasto) + parseFloat(valorGasto); // Novo valor do gasto
+        viagensArray[indiceDaViagemParaAtualizar].orcamento = parseFloat(viagensArray[indiceDaViagemParaAtualizar].orcamento) - parseFloat(valorGasto);
+      }
   
+      // Salve a coleção atualizada de viagens de volta no AsyncStorage
+      await AsyncStorage.setItem('viagens', JSON.stringify(viagensArray));
+  
+      // Verifique se o gasto foi atualizado corretamente
+      const viagensAtualizadas = await AsyncStorage.getItem('viagens');
+      console.log(JSON.parse(viagensAtualizadas));
       setRefresh(!refresh);
       hideModal();
     } catch (error) {
-      console.error("Erro ao salvar viagem:", error);
+      console.error('Erro ao adicionar gasto:', error);
     }
   };
-  
-  
   
   
 
@@ -103,10 +116,9 @@ const HomeScreen = ({navigation}) => {
   const hideModal = () => setVisible(false);
   const containerStyle = { backgroundColor: "white", padding: 20 };
 
-  //configurações do formulario
-  const [cidade, setCidade] = useState("");
-  const [dias, setDias] = useState("");
-  const [orcamento, setOrcamento] = useState("");
+  //configuração de gasto
+  const [diaGasto, setDiaGasto ] = useState('');
+  const [valorGasto, setValorGasto ] = useState('');
 
   const checkViagensCollection = async () => {
     try {
@@ -146,7 +158,7 @@ const HomeScreen = ({navigation}) => {
             <Card.Title
               style={styles.card}
               title="Valor Gasto"
-              subtitle="R$ 300,00"
+              subtitle={"R$ " + viagem.gasto}
               left={(props) => (
                 <Avatar.Icon
                   style={styles.icon2}
@@ -179,37 +191,31 @@ const HomeScreen = ({navigation}) => {
                 contentContainerStyle={containerStyle}
               >
                 <View style={styles.container}>
-                  <Text style={styles.text}>CADASTRAR NOVA VIAGEM</Text>
+                  <Text style={styles.text}>CADASTRAR NOVO GASTO</Text>
                   <TextInput
                     style={styles.input}
                     mode="outlined"
-                    label="Cidade"
-                    value={cidade}
-                    onChangeText={(cidade) => setCidade(cidade)}
+                    label="Dia do gasto"
+                    value={diaGasto}
+                    onChangeText={(diaGasto) => setDiaGasto(diaGasto)}
                   />
                   <TextInput
                     style={styles.input}
                     mode="outlined"
-                    label="Quantidade de dias da viagem"
-                    value={dias}
-                    onChangeText={(dias) => setDias(dias)}
+                    label="Valor Gasto"
+                    value={valorGasto}
+                    onChangeText={(valorGasto) => setValorGasto(valorGasto)}
                   />
-                  <TextInput
-                    style={styles.input}
-                    mode="outlined"
-                    label="Digite o valor do orçamento da viagem"
-                    value={orcamento}
-                    onChangeText={(orcamento) => setOrcamento(orcamento)}
-                  />
+                 
                   <Button
                     style={styles.modalButton}
                     icon="plus"
                     mode="contained"
                     onPress={async () => {
-                      handleNovaViagem()
+                      adicionarGasto()
                     }}
                   >
-                    Nova viagem
+                    Salvar
                   </Button>
 
 
