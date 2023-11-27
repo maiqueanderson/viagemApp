@@ -1,55 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import {
-  Avatar,
-  Card,
-  Divider,
-  List,
-  FAB,
-  Portal,
-  Modal,
-  Button,
-  TextInput,
-} from "react-native-paper";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Image } from "react-native";
+import { Button, TextInput } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Logo from '../assets/logo2.png';
 
 const CriarViagem = ({ navigation }) => {
   const [viagens, setViagens] = useState([]);
-  const [refresh, setRefresh] = useState(false);
-
-  const removeViagem = async (indexToRemove) => {
-    try {
-      const updatedViagens = viagens.filter(
-        (_, index) => index !== indexToRemove
-      );
-      // Atualiza a lista de viagens após a remoção
-      setViagens(updatedViagens);
-
-      // Salva a lista atualizada no AsyncStorage
-      await AsyncStorage.setItem("viagens", JSON.stringify(updatedViagens));
-    } catch (error) {
-      console.error("Erro ao remover viagem:", error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchViagens = async () => {
-      try {
-        const storedViagens = await AsyncStorage.getItem("viagens");
-        if (storedViagens !== null && storedViagens !== "[]") {
-          // Viagens existem no AsyncStorage
-          setViagens(JSON.parse(storedViagens));
-        } else {
-          // Não há viagens cadastradas, navegue para outra tela
-          navigation.navigate("CriarViagem");
-        }
-      } catch (error) {
-        console.error("Erro ao carregar viagens:", error);
-      }
-    };
-
-    fetchViagens();
-  }, [refresh]);
 
   //configurações do formulario
   const [cidade, setCidade] = useState("");
@@ -60,7 +16,7 @@ const CriarViagem = ({ navigation }) => {
     try {
       const viagens = await AsyncStorage.getItem("viagens");
       if (viagens === null) {
-        // Se a coleção 'viagens' não existir, crie uma coleção vazia
+        // Se a coleção 'viagens' não existir, cria uma coleção vazia
         await AsyncStorage.setItem("viagens", JSON.stringify([]));
       }
     } catch (error) {
@@ -71,6 +27,14 @@ const CriarViagem = ({ navigation }) => {
   checkViagensCollection();
   return (
     <View style={styles.container}>
+
+<View >
+        
+        <Image
+        style={styles.tinyLogo}
+        source={Logo}
+      />
+        </View>
       <Text style={styles.text}>CADASTRAR NOVA VIAGEM</Text>
       <TextInput
         style={styles.input}
@@ -93,46 +57,51 @@ const CriarViagem = ({ navigation }) => {
         value={orcamento}
         onChangeText={(orcamento) => setOrcamento(orcamento)}
       />
-     <Button
-  style={styles.modalButton}
-  icon="plus"
-  mode="contained"
-  onPress={async () => {
-    try {
-      const viagem = {
-        cidade: cidade,
-        dias: dias,
-        orcamento: orcamento,
-        gasto: "0",
-        dia: Array.from({ length: dias }, (_, i) => i + 1),
-        valorDia: Array.from({ length: dias }, () => orcamento / dias),
-      };
 
-      const viagens = await AsyncStorage.getItem("viagens");
-      const viagensArray = viagens ? JSON.parse(viagens) : [];
+      <Button
+        style={styles.modalButton}
+        icon="plus"
+        mode="contained"
+        onPress={async () => {
+          try {
+            const viagem = {
+              cidade: cidade,
+              dias: dias,
+              orcamento: orcamento,
+              gasto: "0",
+              dia: Array.from({ length: dias }, (_, i) => i + 1),
+              valorDia: Array.from({ length: dias }, (_, i) => {
+                const incremento = orcamento / dias;
+                let valorAtual = 0;
 
-      console.log(viagensArray.length); // Verifica se há elementos no array
+                for (let j = 0; j <= i; j++) {
+                  valorAtual += incremento;
+                }
+                return valorAtual;
+              }),
+            };
 
-      viagensArray.push(viagem);
-      await AsyncStorage.setItem("viagens", JSON.stringify(viagensArray));
-      navigation.navigate("HomeScreen");
-      setRefresh(!refresh);
+            let viagensArray = await AsyncStorage.getItem("viagens");
+            viagensArray = viagensArray ? JSON.parse(viagensArray) : [];
 
-      //para pegar o valor do array de forma correta
-      
-      const segundoValorDia = viagensArray[0].valorDia[1];
-    console.log(segundoValorDia);
+            // Verifica se já existe uma viagem
+            if (viagensArray.length > 0) {
+              // Substitui a viagem existente
+              viagensArray[0] = viagem;
+            } else {
+              // Cria uma nova viagem
+              viagensArray.push(viagem);
+            }
 
-    } catch (error) {
-      console.error("Erro ao salvar viagem:", error);
-    }
-
-   
-  }}
->
-  Nova viagem
-</Button>
-
+            await AsyncStorage.setItem("viagens", JSON.stringify(viagensArray));
+            navigation.navigate("HomeScreen", { refresh: true });
+          } catch (error) {
+            console.error("Erro ao salvar viagem:", error);
+          }
+        }}
+      >
+        Nova viagem
+      </Button>
     </View>
   );
 };
@@ -144,75 +113,33 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   text: {
-    fontWeight: 700,
-    color: "#446a1c",
-    fontSize: "20px",
+    fontWeight: "bold",
+    color: "#204f72",
+    fontSize: 20,
   },
   button: {
     margin: 20,
   },
-  card: {
-    borderWidth: "1px",
-    borderRadius: "20px",
-    borderColor: "#dbdbdb",
-    margin: "10px",
-    padding: "20px",
-  },
-  cardTitle: {
-    borderWidth: "1px",
-    borderRadius: "20px",
-    borderColor: "#dbdbdb",
-    margin: "10px",
-    backgroundColor: "#dce7cc",
-  },
-  icon1: {
-    backgroundColor: "#a8d496",
-  },
-  icon2: {
-    backgroundColor: "#ff9696",
+  tinyLogo: {
+    margin: 20,
+    width: 150,
+    height: 94
+   },
+   city: {
+    fontSize: 40,
+    padding: 20,
+    backgroundColor: "#204f72",
+    width: 360
+
   },
 
-  historic: {
-    margin: 10,
-    borderWidth: "1px",
-    borderRadius: "20px",
-    borderColor: "#dbdbdb",
-    backgroundColor: "#fff",
-  },
-  fab: {
-    position: "sticky",
-    alignItems: "center",
-    width: "50px",
-    height: "50px",
-    margin: 20,
-    bottom: 10,
-    left: "90vw",
-  },
   input: {
-    width: "80vw",
+    width: 300,
     margin: 16,
   },
   modalButton: {
     width: "80vw",
     marginTop: 20,
-  },
-  city: {
-    fontSize: "40px",
-    fontWeight: 700,
-    padding: 20,
-    color: "#dce7cc",
-    textTransform: "uppercase",
-    backgroundColor: "#446a1c",
-    textAlign: "center",
-    marginBottom: "30px",
-    borderEndStartRadius: "30px",
-    borderEndEndRadius: "30px",
-  },
-  cardText: {
-    fontSize: "15px",
-    textAlign: "center",
-    color: "#446a1c",
-    fontWeight: "700",
   },
 });
 
