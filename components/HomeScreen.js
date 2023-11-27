@@ -14,32 +14,37 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-const renderDias = (quantidadeDias, valorOrca) => {
-  const dias = [];
-  const days  = [];
-  const orc = [];
 
-  for (let i = 1; i <= quantidadeDias; i++) {
-    const newOrc = (valorOrca / quantidadeDias).toFixed(2);
-
-    days.push(i);
-    orc.push(newOrc);
-
-    dias.push(
-      <View key={i}>
-        <List.Item
-          title={`${days[i - 1]}º DIA`} 
-          right={() => <Text>{`R$ ${orc[i - 1]}`}</Text>}
-        />
-        <Divider />
-      </View>
-    );
-  }
-
-  return dias;
-};
 
 const HomeScreen = ({navigation}) => {
+
+    //configuração de gasto
+    const [diaGasto, setDiaGasto ] = useState('');
+    const [valorGasto, setValorGasto ] = useState('0');
+  
+    const renderDias =  (diaGasto, valorDia, quantidadeDias) => {
+      let dias = [];
+    
+      for (let i = 1; i <= quantidadeDias; i++) {
+        let day = diaGasto[i - 1]; // Dia específico
+        let valor = valorDia[i - 1]; // Valor associado ao dia
+    
+        dias.push(
+          <View key={i}>
+            <List.Item
+              title={`${day}º DIA`}
+              right={() => <Text>{`R$ ${valor}`}</Text>}
+            />
+            <Divider />
+          </View>
+        );
+      }
+    
+      return dias;
+    };
+    
+  
+
   const [viagens, setViagens] = useState([]);
   const [refresh, setRefresh] = useState(false);
 
@@ -73,6 +78,8 @@ const HomeScreen = ({navigation}) => {
         // Atualize o valor do gasto na viagem desejada
         viagensArray[indiceDaViagemParaAtualizar].gasto = parseFloat(viagensArray[indiceDaViagemParaAtualizar].gasto) + parseFloat(valorGasto); // Novo valor do gasto
         viagensArray[indiceDaViagemParaAtualizar].orcamento = parseFloat(viagensArray[indiceDaViagemParaAtualizar].orcamento) - parseFloat(valorGasto);
+        viagensArray[indiceDaViagemParaAtualizar].valorDia[diaGasto -1] = parseFloat(viagensArray[indiceDaViagemParaAtualizar].valorDia[diaGasto -1]) - parseFloat(valorGasto);
+       
       }
   
       // Salve a coleção atualizada de viagens de volta no AsyncStorage
@@ -81,22 +88,29 @@ const HomeScreen = ({navigation}) => {
       // Verifique se o gasto foi atualizado corretamente
       const viagensAtualizadas = await AsyncStorage.getItem('viagens');
       console.log(JSON.parse(viagensAtualizadas));
-      setRefresh(!refresh);
-      hideModal();
+      
+      console.log('Antes de setRefresh');
+    setRefresh(!refresh);
+    console.log('Após setRefresh');
+    hideModal();
+      
     } catch (error) {
       console.error('Erro ao adicionar gasto:', error);
     }
   };
-  
   
 
   useEffect(() => {
     const fetchViagens = async () => {
       try {
         const storedViagens = await AsyncStorage.getItem('viagens');
+      const viagensArray = storedViagens ? JSON.parse(storedViagens) : [];
+
         if (storedViagens !== null && storedViagens !== '[]') {
           // Viagens existem no AsyncStorage
           setViagens(JSON.parse(storedViagens));
+
+        
         } else {
           // Não há viagens cadastradas, navegue para outra tela
           navigation.navigate('CriarViagem');
@@ -105,9 +119,10 @@ const HomeScreen = ({navigation}) => {
         console.error('Erro ao carregar viagens:', error);
       }
     };
+    
   
-    fetchViagens();
-    setRefresh(!refresh);
+    fetchViagens(refresh);
+    
   }, [refresh]);
 
   //configurações do MODAL
@@ -116,9 +131,6 @@ const HomeScreen = ({navigation}) => {
   const hideModal = () => setVisible(false);
   const containerStyle = { backgroundColor: "white", padding: 20 };
 
-  //configuração de gasto
-  const [diaGasto, setDiaGasto ] = useState('');
-  const [valorGasto, setValorGasto ] = useState('');
 
   const checkViagensCollection = async () => {
     try {
@@ -176,11 +188,13 @@ const HomeScreen = ({navigation}) => {
             <View style={styles.historic}>
               <List.Section>
                 {renderDias(
+                  viagem.dia,
+                  viagem.valorDia,
                   parseFloat(viagem.dias),
-                  parseFloat(viagem.orcamento)
                 )}
               </List.Section>
             </View>
+
 
             <FAB icon="plus" style={styles.fab} onPress={showModal} />
 

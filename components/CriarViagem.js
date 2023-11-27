@@ -35,27 +35,21 @@ const CriarViagem = ({ navigation }) => {
   useEffect(() => {
     const fetchViagens = async () => {
       try {
-        const storedViagens = await AsyncStorage.getItem('viagens');
-        if (storedViagens !== null && storedViagens !== '[]') {
+        const storedViagens = await AsyncStorage.getItem("viagens");
+        if (storedViagens !== null && storedViagens !== "[]") {
           // Viagens existem no AsyncStorage
           setViagens(JSON.parse(storedViagens));
         } else {
           // Não há viagens cadastradas, navegue para outra tela
-          navigation.navigate('CriarViagem');
+          navigation.navigate("CriarViagem");
         }
       } catch (error) {
-        console.error('Erro ao carregar viagens:', error);
+        console.error("Erro ao carregar viagens:", error);
       }
     };
-  
+
     fetchViagens();
   }, [refresh]);
-
-  //configurações do MODAL
-  const [visible, setVisible] = useState(false);
-  const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
-  const containerStyle = { backgroundColor: "white", padding: 20 };
 
   //configurações do formulario
   const [cidade, setCidade] = useState("");
@@ -77,70 +71,71 @@ const CriarViagem = ({ navigation }) => {
   checkViagensCollection();
   return (
     <View style={styles.container}>
-                  <Text style={styles.text}>CADASTRAR NOVA VIAGEM</Text>
-                  <TextInput
-                    style={styles.input}
-                    mode="outlined"
-                    label="Cidade"
-                    value={cidade}
-                    onChangeText={(cidade) => setCidade(cidade)}
-                  />
-                  <TextInput
-                    style={styles.input}
-                    mode="outlined"
-                    label="Quantidade de dias da viagem"
-                    value={dias}
-                    onChangeText={(dias) => setDias(dias)}
-                  />
-                  <TextInput
-                    style={styles.input}
-                    mode="outlined"
-                    label="Digite o valor do orçamento da viagem"
-                    value={orcamento}
-                    onChangeText={(orcamento) => setOrcamento(orcamento)}
-                  />
-                  <Button
-                    style={styles.modalButton}
-                    icon="plus"
-                    mode="contained"
-                    onPress={async () => {
-                      try {
-                        const viagem = {
-                          cidade: cidade,
-                          dias: dias,
-                          orcamento: orcamento,
-                          gasto: 0
-                        };
+      <Text style={styles.text}>CADASTRAR NOVA VIAGEM</Text>
+      <TextInput
+        style={styles.input}
+        mode="outlined"
+        label="Cidade"
+        value={cidade}
+        onChangeText={(cidade) => setCidade(cidade)}
+      />
+      <TextInput
+        style={styles.input}
+        mode="outlined"
+        label="Quantidade de dias da viagem"
+        value={dias}
+        onChangeText={(dias) => setDias(dias)}
+      />
+      <TextInput
+        style={styles.input}
+        mode="outlined"
+        label="Digite o valor do orçamento da viagem"
+        value={orcamento}
+        onChangeText={(orcamento) => setOrcamento(orcamento)}
+      />
+     <Button
+  style={styles.modalButton}
+  icon="plus"
+  mode="contained"
+  onPress={async () => {
+    try {
+      const viagem = {
+        cidade: cidade,
+        dias: dias,
+        orcamento: orcamento,
+        gasto: "0",
+        dia: Array.from({ length: dias }, (_, i) => i + 1),
+        valorDia: Array.from({ length: dias }, () => orcamento / dias),
+      };
 
-                        const viagens = await AsyncStorage.setItem("viagens");
-                        const viagensArray = viagens ? JSON.parse(viagens) : [];
+      const viagens = await AsyncStorage.getItem("viagens");
+      const viagensArray = viagens ? JSON.parse(viagens) : [];
 
-                        viagensArray.push(viagem);
-                        await AsyncStorage.setItem(
-                          "viagens",
-                          JSON.stringify(viagensArray)
-                        );
-                        navigation.navigate('HomeScreen');
-                        setRefresh(!refresh);
-                        
-                        
-                        
-                        
-                      } catch (error) {
-                        console.error("Erro ao salvar viagem:", error);
-                      }
-                    }}
-                  >
-                    Nova viagem
-                  </Button>
+      console.log(viagensArray.length); // Verifica se há elementos no array
 
+      viagensArray.push(viagem);
+      await AsyncStorage.setItem("viagens", JSON.stringify(viagensArray));
+      navigation.navigate("HomeScreen");
+      setRefresh(!refresh);
 
-                </View>
-                
+      //para pegar o valor do array de forma correta
+      
+      const segundoValorDia = viagensArray[0].valorDia[1];
+    console.log(segundoValorDia);
+
+    } catch (error) {
+      console.error("Erro ao salvar viagem:", error);
+    }
+
+   
+  }}
+>
+  Nova viagem
+</Button>
+
+    </View>
   );
-  
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -222,4 +217,3 @@ const styles = StyleSheet.create({
 });
 
 export default CriarViagem;
-
