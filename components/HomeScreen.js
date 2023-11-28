@@ -10,15 +10,17 @@ import {
   Modal,
   Button,
   TextInput,
-  Appbar
+  Appbar,
 } from "react-native-paper";
+import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Logo from '../assets/logo.png';
-const HomeScreen = ({ navigation, route }) =>{
+import Logo from "../assets/logo.png";
+
+const HomeScreen = ({ navigation, route }) => {
+
   const [refresh, setRefresh] = useState(false);
-  
   //configuração de gasto
-  const [diaGasto, setDiaGasto] = useState("");
+  const [diaGasto, setDiaGasto] = useState("1");
   const [valorGasto, setValorGasto] = useState("");
 
   const renderDias = (diaGasto, valorDia, quantidadeDias) => {
@@ -42,6 +44,22 @@ const HomeScreen = ({ navigation, route }) =>{
     return dias;
   };
 
+
+  const renderDiasModal = (diaGasto, quantidadeDias) => {
+    let dias = [];
+  
+    for (let i = 1; i <= quantidadeDias; i++) {
+      let day = diaGasto[i - 1]; // Dia específico
+  
+      dias.push(
+        <Picker.Item key={i} label={`Dia ${day}`} value={`${day}`} />
+      );
+    }
+  
+    return dias;
+  };
+  
+
   const [viagens, setViagens] = useState([]);
 
   const removeViagem = async (indexToRemove) => {
@@ -64,6 +82,7 @@ const HomeScreen = ({ navigation, route }) =>{
       // Pega a coleção atual de viagens do AsyncStorage
       const viagens = await AsyncStorage.getItem("viagens");
       const viagensArray = viagens ? JSON.parse(viagens) : [];
+      let dia = diaGasto;
 
       // atualizar o gasto da viagem no índice 0
       const indiceDaViagemParaAtualizar = 0;
@@ -74,9 +93,16 @@ const HomeScreen = ({ navigation, route }) =>{
         viagensArray[indiceDaViagemParaAtualizar].gasto =
           parseFloat(viagensArray[indiceDaViagemParaAtualizar].gasto) +
           parseFloat(valorGasto); // Novo valor do gasto
+
         viagensArray[indiceDaViagemParaAtualizar].orcamento =
           parseFloat(viagensArray[indiceDaViagemParaAtualizar].orcamento) -
           parseFloat(valorGasto);
+          
+          viagensArray[indiceDaViagemParaAtualizar].historicValor[dia -1] =
+          parseFloat(viagensArray[indiceDaViagemParaAtualizar].historicValor[dia -1]) +
+          parseFloat(valorGasto);
+          
+          console.log(dia)
         // Atualiza o valor gasto do dia e os outros dias em seguida
         for (
           let i = diaGasto;
@@ -97,16 +123,14 @@ const HomeScreen = ({ navigation, route }) =>{
       const viagensAtualizadas = await AsyncStorage.getItem("viagens");
       console.log(JSON.parse(viagensAtualizadas));
 
-      console.log("Antes de setRefresh");
       setRefresh(!refresh);
-      console.log("Após setRefresh");
       hideModal();
     } catch (error) {
       console.error("Erro ao adicionar gasto:", error);
     }
   };
 
-useEffect(() => {
+  useEffect(() => {
     const fetchViagens = async () => {
       try {
         const storedViagens = await AsyncStorage.getItem("viagens");
@@ -130,7 +154,6 @@ useEffect(() => {
     }
   }, [route.params?.refresh]);
 
-
   //configurações do MODAL
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
@@ -153,125 +176,118 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
-     <View style={styles.city} >
-        
-        <Image
-        style={styles.tinyLogo}
-        source={Logo}
-      />
-        </View>
-
-    <ScrollView>
-      <View>
-     
-       
-
-        {viagens.map((viagem, index) => (
-
-          <View key={index}>
-
-         
-
-          <Text style={styles.cityText}>
-            {viagem.cidade}</Text>
-            <Card.Title
-              style={styles.card}
-              title="Valor Restante"
-              subtitle={"R$ " + viagem.orcamento}
-              left={(props) => (
-                <Avatar.Icon
-                  style={styles.icon1}
-                  {...props}
-                  icon="cash-check"
-                />
-              )}
-            />
-
-            <Card.Title
-              style={styles.card}
-              title="Valor Gasto"
-              subtitle={"R$ " + viagem.gasto}
-              left={(props) => (
-                <Avatar.Icon
-                  style={styles.icon2}
-                  {...props}
-                  icon="cash-remove"
-                />
-              )}
-            />
-             <Button
-             style={styles.button}
-                    icon="plus"
-                    mode="contained"
-            onPress={showModal}
-            >Adicionar Gasto</Button>
-            <Card style={styles.cardTitle}>
-              <Card.Content>
-                <Text style={styles.cardText}>A GASTAR POR DIA</Text>
-              </Card.Content>
-            </Card>
-
-            <View style={styles.historic}>
-              <List.Section>
-                {renderDias(
-                  viagem.dia,
-                  viagem.valorDia,
-                  parseFloat(viagem.dias)
-                )}
-              </List.Section>
-            </View>
-
-         
-
-            <Portal>
-              <Modal
-              style={styles.modal}
-                visible={visible}
-                onDismiss={hideModal}
-                contentContainerStyle={containerStyle}
-              >
-                <View style={styles.container}>
-                  <Text style={styles.text}>CADASTRAR NOVO GASTO</Text>
-                  <TextInput
-                    style={styles.input}
-                    mode="outlined"
-                    label="Dia do gasto"
-                    value={diaGasto}
-                    onChangeText={(diaGasto) => setDiaGasto(diaGasto)}
-                  />
-                  <TextInput
-                    style={styles.input}
-                    mode="outlined"
-                    label="Valor Gasto"
-                    value={valorGasto}
-                    onChangeText={(valorGasto) => setValorGasto(valorGasto)}
-                  />
-
-                  <Button
-                    style={styles.modalButton}
-                    icon="plus"
-                    mode="contained"
-                    onPress={async () => {
-                      adicionarGasto();
-                    }}
-                  >
-                    Salvar
-                  </Button>
-                </View>
-              </Modal>
-            </Portal>
-            
-  
-           
-            <Button onPress={() => removeViagem(index)}>REMOVER VIAGEM</Button>
-          
-          
-            
-          </View>
-        ))}
+      <View style={styles.city}>
+        <Image style={styles.tinyLogo} source={Logo} />
       </View>
-      
-    </ScrollView>
+
+      <ScrollView>
+        <View>
+          {viagens.map((viagem, index) => (
+            <View key={index}>
+              <Text style={styles.cityText}>{viagem.cidade}</Text>
+              <Card.Title
+                style={styles.card}
+                title="Valor Restante"
+                subtitle={"R$ " + viagem.orcamento}
+                left={(props) => (
+                  <Avatar.Icon
+                    style={styles.icon1}
+                    {...props}
+                    icon="cash-check"
+                  />
+                )}
+              />
+
+              <Card.Title
+                style={styles.card}
+                title="Valor Gasto"
+                subtitle={"R$ " + viagem.gasto}
+                left={(props) => (
+                  <Avatar.Icon
+                    style={styles.icon2}
+                    {...props}
+                    icon="cash-remove"
+                  />
+                )}
+              />
+              <Button
+                style={styles.button}
+                icon="plus"
+                mode="contained"
+                onPress={showModal}
+              >
+                Adicionar Gasto
+              </Button>
+
+              <Text style={styles.cardText}>A GASTAR POR DIA</Text>
+
+              <View style={styles.historic}>
+                <List.Section>
+                  {renderDias(
+                    viagem.dia,
+                    viagem.valorDia,
+                    parseFloat(viagem.dias)
+                  )}
+                </List.Section>
+              </View>
+
+              <Portal>
+                <Modal
+                  style={styles.modal}
+                  visible={visible}
+                  onDismiss={hideModal}
+                  contentContainerStyle={containerStyle}
+                >
+
+                 
+
+
+                  <View>
+                    <Text style={styles.Modaltext}>CADASTRAR NOVO GASTO</Text>
+
+                    <Picker
+                    style={styles.inputDia}
+                    selectedValue={diaGasto}
+                    onValueChange={(itemValue, itemIndex) =>
+                      setDiaGasto(itemValue)
+                    }
+                  >
+                 {renderDiasModal(
+                    viagem.dia,
+                    parseFloat(viagem.dias)
+                  )}
+                  </Picker>
+
+                    <TextInput
+                      style={styles.input}
+                      mode="outlined"
+                      label="Valor Gasto"
+                      keyboardType="numeric"
+                      value={valorGasto}
+                      onChangeText={(valorGasto) => setValorGasto(valorGasto)}
+                    />
+
+                    <Button
+                      style={styles.modalButton}
+                      icon="plus"
+                      mode="contained"
+                      onPress={async () => {
+                        adicionarGasto();
+                      }}
+                    >
+                      Salvar
+                    </Button>
+                  </View>
+                </Modal>
+              </Portal>
+
+              <Button onPress={() => removeViagem(index)}>
+                REMOVER VIAGEM
+              </Button>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -280,25 +296,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  modal:{
-    flex: 1,
+  modal: {
     alignItems: "center",
-    justifyContent: "center",
     height: 400,
-    
-    
   },
   tinyLogo: {
-   margin: 20,
-   left: 70,
-   top: 10,
-   width: 150,
-   height: 94
+    width: 150,
+    height: 94,
+    margin: 25,
+    top: 15
+    
+   
   },
   text: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: "#204f72",
     fontSize: 20,
+  },
+  Modaltext: {
+    fontWeight: "bold",
+    color: "#204f72",
+    fontSize: 20,
+    margin: 50,
+    marginBottom: 0,
+    marginTop: 20,
   },
   button: {
     margin: 20,
@@ -312,7 +333,6 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     borderWidth: 1,
-    borderRadius: 20,
     borderColor: "#dbdbdb",
     margin: 10,
     backgroundColor: "#64bbf7",
@@ -343,37 +363,41 @@ const styles = StyleSheet.create({
     width: 300,
     margin: 16,
   },
-  modalButton: {
+  inputDia:{
     width: 300,
-    marginTop: 20,
+    margin: 16,
+    backgroundColor: '#e9f0f6',
+    color: '#204f72',
+  },
+  modalButton: {
+    margin: 15,
   },
   fixedHeader: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
   },
   city: {
-    fontSize: 40,
-    padding: 20,
     backgroundColor: "#204f72",
-    width: 360
+    alignItems: 'center',
 
   },
 
-  cityText:{
-    fontSize: 40,
-    fontWeight: 'bold',
-    padding: 20,
+  cityText: {
+    fontSize: 30,
+    fontWeight: "bold",
+    margin: 20,
     color: "#204f72",
     textTransform: "uppercase",
     textAlign: "center",
   },
   cardText: {
-    fontSize: 15,
+    fontSize: 20,
     textAlign: "center",
-    color: "#fff",
-    fontWeight: 'bold',
+    color: "#204f72",
+    fontWeight: "bold",
+    margin: 15,
   },
 });
 

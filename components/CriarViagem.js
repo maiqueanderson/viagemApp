@@ -47,6 +47,7 @@ const CriarViagem = ({ navigation }) => {
         style={styles.input}
         mode="outlined"
         label="Quantidade de dias da viagem"
+        keyboardType="numeric"
         value={dias}
         onChangeText={(dias) => setDias(dias)}
       />
@@ -54,6 +55,7 @@ const CriarViagem = ({ navigation }) => {
         style={styles.input}
         mode="outlined"
         label="Digite o valor do orçamento da viagem"
+        keyboardType="numeric"
         value={orcamento}
         onChangeText={(orcamento) => setOrcamento(orcamento)}
       />
@@ -77,6 +79,10 @@ const CriarViagem = ({ navigation }) => {
                 for (let j = 0; j <= i; j++) {
                   valorAtual += incremento;
                 }
+                return valorAtual;
+              }),
+              historicValor: Array.from({ length: dias }, (_, i) => {
+                let valorAtual = 0;
                 return valorAtual;
               }),
             };

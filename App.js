@@ -1,14 +1,16 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import "react-native-gesture-handler";
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { MD3LightTheme as DefaultTheme, PaperProvider } from 'react-native-paper';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import {
+  MD3LightTheme as DefaultTheme,
+  PaperProvider,
+} from "react-native-paper";
 
 import HomeScreen from "./components/HomeScreen";
-import ParaGastar from "./components/ParaGastar";
 import CriarViagem from "./components/CriarViagem";
-
+import Historic from "./components/Historic";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -50,49 +52,61 @@ const theme = {
       level2: "rgb(232, 240, 247)",
       level3: "rgb(224, 235, 244)",
       level4: "rgb(222, 234, 243)",
-      level5: "rgb(217, 231, 241)"
+      level5: "rgb(217, 231, 241)",
     },
     surfaceDisabled: "rgba(26, 28, 30, 0.12)",
     onSurfaceDisabled: "rgba(26, 28, 30, 0.38)",
-    backdrop: "rgba(43, 49, 55, 0.4)"
-  }
-  
+    backdrop: "rgba(43, 49, 55, 0.4)",
+  },
 };
 
-
 export default function App() {
-  
   return (
     <PaperProvider theme={theme}>
+      <NavigationContainer>
+        <Tab.Navigator>
+          <Tab.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{
+              tabBarLabel: "Home",
+              tabBarIcon: ({ color }) => (
+                <MaterialCommunityIcons name="home" color={color} size={26} />
+              ),
+            }}
+          />
 
-    <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen 
-        name="HomeScreen"
-        component={HomeScreen}
-        options={{
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="home" color={color} size={26} />
-          ),
-        }}
-         />
-       
-        <Tab.Screen 
-        
-        name="CriarViagem" 
-        component={CriarViagem} 
-        options={{
-          tabBarLabel: 'Nova Viagem',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="plus-box" color={color} size={26} />
-          ),
-        }}
-        />
-      </Tab.Navigator>
-      
-    </NavigationContainer>
+          <Tab.Screen
+            name="CriarViagem"
+            component={CriarViagem}
+            options={{
+              tabBarLabel: "Nova Viagem",
+              tabBarIcon: ({ color }) => (
+                <MaterialCommunityIcons
+                  name="plus-box"
+                  color={color}
+                  size={26}
+                />
+              ),
+            }}
+          />
+
+          <Tab.Screen
+            name="Historic"
+            component={Historic}
+            options={{
+              tabBarLabel: "Historico",
+              tabBarIcon: ({ color }) => (
+                <MaterialCommunityIcons
+                  name="book-open-variant"
+                  color={color}
+                  size={26}
+                />
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
     </PaperProvider>
-    
   );
 }
