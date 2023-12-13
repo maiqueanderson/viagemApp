@@ -9,8 +9,10 @@
 <h4 align="center">An app designed to assist individuals in tracking and managing expenses during their trips.</h4>
 
 
+<div align="center">
+  ![screenshot](https://lh3.googleusercontent.com/pw/ABLVV84LnY0Fq5rmRTPJT7T9eK37qJ91QuYmoCAEfAEmB_fAG7eCCSNNrrYVC6ct0HoCze9TAlVcvFsBbDoAbCk30FvayjpnSpLNR1-rtTncOeAB8LsrgmdAe4m8S7WfrwaBXQMpkrSoYYl4J4tj616lGR3mnQ=w348-h772-s-no?authuser=0)
+</div>
 
-![screenshot](https://lh3.googleusercontent.com/pw/ABLVV84LnY0Fq5rmRTPJT7T9eK37qJ91QuYmoCAEfAEmB_fAG7eCCSNNrrYVC6ct0HoCze9TAlVcvFsBbDoAbCk30FvayjpnSpLNR1-rtTncOeAB8LsrgmdAe4m8S7WfrwaBXQMpkrSoYYl4J4tj616lGR3mnQ=w348-h772-s-no?authuser=0)
 
 ## Key Features
 
@@ -56,8 +58,4 @@ This software uses the following open source packages:
 
 
 ---
-
-> [amitmerchant.com](https://www.amitmerchant.com) &nbsp;&middot;&nbsp;
-> GitHub [@amitmerchant1990](https://github.com/amitmerchant1990) &nbsp;&middot;&nbsp;
-> Twitter [@amit_merchant](https://twitter.com/amit_merchant)
 
