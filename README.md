@@ -8,13 +8,9 @@
 
 <h4 align="center">An app designed to assist individuals in tracking and managing expenses during their trips.</h4>
 
-
-  ![screenshot](https://lh3.googleusercontent.com/pw/ABLVV84LnY0Fq5rmRTPJT7T9eK37qJ91QuYmoCAEfAEmB_fAG7eCCSNNrrYVC6ct0HoCze9TAlVcvFsBbDoAbCk30FvayjpnSpLNR1-rtTncOeAB8LsrgmdAe4m8S7WfrwaBXQMpkrSoYYl4J4tj616lGR3mnQ=w348-h772-s-no?authuser=0)
-
   <p align="center">
   <img src = "https://lh3.googleusercontent.com/pw/ABLVV84LnY0Fq5rmRTPJT7T9eK37qJ91QuYmoCAEfAEmB_fAG7eCCSNNrrYVC6ct0HoCze9TAlVcvFsBbDoAbCk30FvayjpnSpLNR1-rtTncOeAB8LsrgmdAe4m8S7WfrwaBXQMpkrSoYYl4J4tj616lGR3mnQ=w348-h772-s-no?authuser=0">
 </p>
-
 
 ## Key Features
 
